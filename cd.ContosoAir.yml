@@ -48,7 +48,7 @@ steps:
     azureSubscription: 'Azure Connection'
     appType: 'webApp'
     WebAppName: '$(web_prefix)-$(web_site)-$(web_environment)'
-    packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+    packageForLinux: '$(Pipeline.Workspace)/drop/*.zip'
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
