@@ -1,27 +1,42 @@
-   pool:
-     name: default
-   trigger:
-     - master
-   steps:
-     - task: CopyFiles@2
-       displayName: 'Copy Files to: $(build.artifactstagingdirectory)/Templates'
-       inputs:
-         SourceFolder: deployment
-         Contents: '*.json'
-         TargetFolder: '$(build.artifactstagingdirectory)/Templates'
-     - task: Npm@1
-       displayName: 'npm custom'
-       inputs:
-         command: custom
-         verbose: false
-         customCommand: 'install --production'
-     - task: ArchiveFiles@2
-       displayName: 'Archive $(Build.SourcesDirectory)'
-       inputs:
-         rootFolderOrFile: '$(Build.SourcesDirectory)'
-         includeRootFolder: false
-     - task: PublishPipelineArtifact@1
-       inputs:
-         targetPath: '$(build.artifactstagingdirectory)'
-         artifact: 'drop'
-         publishLocation: 'pipeline'
+pool:
+  name: default
+
+trigger:
+  - master
+
+steps:
+  - task: DeleteFiles@1
+    displayName: 'Clean artifact staging folder'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)'
+      Contents: '**/*'
+
+  - task: CopyFiles@2
+    displayName: 'Copy ARM templates'
+    inputs:
+      SourceFolder: deployment
+      Contents: '*.json'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/Templates'
+
+  - task: Npm@1
+    displayName: 'npm install production'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'install --production'
+
+  - task: ArchiveFiles@2
+    displayName: 'Create webapp.zip'
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/webapp.zip'
+      replaceExistingArchive: true
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish drop artifact'
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifact: 'drop'
+      publishLocation: 'pipeline'
