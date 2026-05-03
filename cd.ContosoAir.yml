@@ -50,7 +50,7 @@ steps:
       azureSubscription: 'Azure Connection'
       appType: 'webApp'
       WebAppName: '$(web_prefix)-$(web_site)-$(web_environment)'
-      packageForLinux: '$(Pipeline.Workspace)/drop/28.zip'
+      packageForLinux: '$(Pipeline.Workspace)/drop/webapp.zip'
 
   - script: |
       echo Deployment completed.
